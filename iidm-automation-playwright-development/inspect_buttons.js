@@ -1,0 +1,30 @@
+const { chromium } = require('playwright');
+(async () => {
+  const browser = await chromium.launch({ headless: false, slowMo: 200 });
+  const page = await browser.newPage();
+  await page.goto('https://www.staging-buzzworld-v1.iidm.com/quote_for_parts');
+  await page.waitForURL('**/Login**', { timeout: 30000 });
+  await page.getByRole('textbox', { name: 'Email' }).fill('defaultuser@enterpi.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('Enspirit@625');
+  await page.getByRole('button', { name: 'Sign In', exact: true }).first().click();
+  await page.waitForURL('**/quote_for_parts**', { timeout: 60000 });
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(3000);
+  // Apply Open filter on Parts Quotes
+  await page.getByText('Filters').click();
+  await page.waitForTimeout(2000);
+  await page.locator('div:nth-child(3) > .css-sjtnp2 > .pi-select-wrapper > .css-5a7vsu-container > .drop-height-80px.multi-select.react-select__control > .drop-height-80px.multi-select.react-select__value-container').click();
+  await page.waitForTimeout(1500);
+  await page.locator('div[id^="react-select-"][id$="-option-4"]').click();
+  await page.waitForTimeout(1000);
+  await page.getByRole('button', { name: 'Apply' }).click();
+  await page.waitForTimeout(5000);
+  await page.locator('.ag-body-viewport .ag-row').first().waitFor({state:'attached', timeout:30000});
+  await page.locator('.ag-center-cols-container .ag-row[row-index="0"]').click({force:true});
+  await page.waitForURL(/\/(quote_for_parts|all_quotes|repair_quotes|system_quotes)\/.+/, { timeout: 30000 });
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(3000);
+  const buttons = await page.locator('button').evaluateAll(nodes => nodes.map(node => ({ text: node.textContent.trim(), ariaLabel: node.getAttribute('aria-label'), title: node.title, class: node.className, outerHTML: node.outerHTML })));
+  console.log(JSON.stringify(buttons.slice(0,80), null, 2));
+  await browser.close();
+})();

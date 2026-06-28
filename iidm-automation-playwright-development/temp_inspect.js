@@ -1,0 +1,27 @@
+const { chromium } = require('playwright');
+(async () => {
+  const browser = await chromium.launch({ headless: false });
+  const page = await browser.newPage();
+  await page.goto('https://www.staging-buzzworld-v1.iidm.com/quote_for_parts');
+  await page.waitForURL('**/Login**', { timeout: 60000 });
+  await page.getByRole('textbox', { name: 'Email' }).fill('defaultuser@enterpi.com');
+  await page.getByRole('textbox', { name: 'Password' }).fill('Enspirit@625');
+  await page.getByRole('button', { name: 'Sign In' }).click();
+  await page.waitForURL('**/quote_for_parts**', { timeout: 60000 });
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(3000);
+  await page.getByText('Filters').click();
+  await page.waitForTimeout(1000);
+  const statusCtrl = page.locator('div:nth-child(3) > .css-sjtnp2 > .pi-select-wrapper > .css-5a7vsu-container > .drop-height-80px.multi-select.react-select__control > .drop-height-80px.multi-select.react-select__value-container');
+  console.log('statusCtrl visible', await statusCtrl.isVisible());
+  await statusCtrl.click();
+  await page.waitForTimeout(1500);
+  const opts = page.locator('div[id^="react-select-"][id*="-option-"]');
+  console.log('option count', await opts.count());
+  console.log('texts', await opts.allTextContents());
+  const openOpts = opts.filter({ hasText: 'Open' });
+  console.log('open count', await openOpts.count());
+  console.log('open texts', await openOpts.allTextContents());
+  await page.waitForTimeout(10000);
+  await browser.close();
+})();

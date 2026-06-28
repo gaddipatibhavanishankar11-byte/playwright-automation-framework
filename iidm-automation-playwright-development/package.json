@@ -1,0 +1,24 @@
+{
+  "name": "playwright_mcp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:ci": "npx playwright test --reporter=html",
+    "show-report": "npx playwright show-report",
+    "gen:pdf": "node generate_pdf.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.59.1",
+    "@types/node": "^25.5.2"
+  }
+  ,
+  "dependencies": {
+    "playwright": "^1.59.1"
+  }
+}
